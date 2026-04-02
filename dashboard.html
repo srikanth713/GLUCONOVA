@@ -432,22 +432,36 @@ nav { flex: 1; }
 
 </main>
 
-<script>
-const API = 'http://localhost:5000/api';
+<script type="module">// 🔥 Firebase Auth Check (minimal change)
+const API = 'http://127.0.0.1:5000/api';
+
 let token = localStorage.getItem('token');
-let trendChart, impactChart;
 
-if (!token) location.href = 'index.html';
+if (!token) {
+  window.location.href = "index.html";
+}
 
-// ── Auth helpers ──
-function authHeaders() { return {'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`}; }
-function logout() { localStorage.clear(); location.href = 'index.html'; }
+function authHeaders() {
+  return {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${token}`
+  };
+}
 
+// ✅ Replace old token check
+
+
+// 🔥 Logout fix
+window.logout = function () {
+  localStorage.clear();
+  window.location.href = "index.html";
+};
 // ── Init ──
 const user = JSON.parse(localStorage.getItem('user') || '{}');
-document.getElementById('user-name').textContent = user.name || 'User';
-document.getElementById('user-avatar').textContent = (user.name || 'U')[0].toUpperCase();
 
+document.getElementById('user-name').textContent = user.name || 'User';
+document.getElementById('user-avatar').textContent =
+  (user.name || 'U')[0].toUpperCase();
 // ── Navigation ──
 function showPage(id) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
