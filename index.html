@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gluconova — Smart Glucose Monitoring</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --teal: #00d4aa;
+    --teal-dark: #00a882;
+    --cyan: #00e5ff;
+    --bg: #040d14;
+    --bg2: #071520;
+    --bg3: #0d2133;
+    --card: #0a1e2e;
+    --border: rgba(0,212,170,0.15);
+    --text: #e2f0f7;
+    --muted: #6a8fa8;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Space Grotesk', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+  }
+  .bg-grid {
+    position: fixed; inset: 0; z-index: 0;
+    background-image:
+      linear-gradient(rgba(0,212,170,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,212,170,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+  .bg-glow {
+    position: fixed; border-radius: 50%; filter: blur(120px); z-index: 0;
+  }
+  .glow1 { width: 600px; height: 600px; background: rgba(0,212,170,0.06); top: -200px; right: -200px; }
+  .glow2 { width: 400px; height: 400px; background: rgba(0,229,255,0.04); bottom: -100px; left: -100px; }
+  .container { position: relative; z-index: 1; width: 100%; max-width: 440px; padding: 24px; }
+  .logo { text-align: center; margin-bottom: 48px; }
+  .logo-icon {
+    width: 64px; height: 64px; background: linear-gradient(135deg, var(--teal), var(--cyan));
+    border-radius: 18px; margin: 0 auto 16px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 0 40px rgba(0,212,170,0.3);
+    animation: pulse-logo 3s ease-in-out infinite;
+  }
+  @keyframes pulse-logo {
+    0%, 100% { box-shadow: 0 0 40px rgba(0,212,170,0.3); }
+    50% { box-shadow: 0 0 60px rgba(0,212,170,0.5), 0 0 100px rgba(0,212,170,0.2); }
+  }
+  .logo h1 { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; }
+  .logo h1 span { color: var(--teal); }
+  .logo p { color: var(--muted); font-size: 13px; margin-top: 4px; font-family: 'JetBrains Mono', monospace; }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 36px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+  }
+  .tabs { display: flex; gap: 4px; background: var(--bg3); border-radius: 12px; padding: 4px; margin-bottom: 32px; }
+  .tab {
+    flex: 1; padding: 10px; border: none; background: transparent;
+    color: var(--muted); font-family: 'Space Grotesk', sans-serif;
+    font-size: 14px; font-weight: 500; border-radius: 9px;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .tab.active { background: var(--teal); color: #040d14; }
+  .form-group { margin-bottom: 18px; }
+  label { display: block; font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px; }
+  input {
+    width: 100%; padding: 13px 16px;
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: 10px; color: var(--text);
+    font-family: 'Space Grotesk', sans-serif; font-size: 15px;
+    outline: none; transition: all 0.2s;
+  }
+  input:focus { border-color: var(--teal); box-shadow: 0 0 0 3px rgba(0,212,170,0.1); }
+  input::placeholder { color: var(--muted); }
+  .btn {
+    width: 100%; padding: 14px;
+    background: linear-gradient(135deg, var(--teal), var(--teal-dark));
+    border: none; border-radius: 10px;
+    color: #040d14; font-family: 'Space Grotesk', sans-serif;
+    font-size: 15px; font-weight: 700; cursor: pointer;
+    transition: all 0.2s; margin-top: 8px;
+    letter-spacing: 0.3px;
+  }
+  .btn:hover { transform: translateY(-1px); box-shadow: 0 8px 25px rgba(0,212,170,0.35); }
+  .btn:active { transform: translateY(0); }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+  .error { color: #ff6b8a; font-size: 13px; margin-top: 12px; text-align: center; }
+  .success { color: var(--teal); font-size: 13px; margin-top: 12px; text-align: center; }
+  .badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(0,212,170,0.1); border: 1px solid rgba(0,212,170,0.2);
+    border-radius: 20px; padding: 4px 12px;
+    font-size: 11px; color: var(--teal); font-family: 'JetBrains Mono', monospace;
+    margin-bottom: 28px;
+  }
+  .dot { width: 6px; height: 6px; background: var(--teal); border-radius: 50%; animation: blink 1.5s infinite; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
+  .form-panel { display: none; }
+  .form-panel.active { display: block; animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
+</style>
+</head>
+<body>
+<div class="bg-grid"></div>
+<div class="bg-glow glow1"></div>
+<div class="bg-glow glow2"></div>
+
+<div class="container">
+  <div class="logo">
+    <div class="logo-icon">
+      <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+        <path d="M16 4C16 4 8 10 8 18C8 22.4 11.6 26 16 26C20.4 26 24 22.4 24 18C24 10 16 4 16 4Z" fill="#040d14" opacity="0.9"/>
+        <path d="M16 8C16 8 10 13 10 18C10 21.3 12.7 24 16 24C19.3 24 22 21.3 22 18C22 13 16 8 16 8Z" fill="rgba(0,229,255,0.3)"/>
+        <path d="M12 18 L14.5 20.5 L20 14" stroke="#040d14" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <h1>Gluco<span>nova</span></h1>
+    <p>// NIR-Powered Glucose Intelligence</p>
+  </div>
+
+  <div class="card">
+    <div style="text-align:center;margin-bottom:24px">
+      <div class="badge"><div class="dot"></div> System Active · NIR Sensor Ready</div>
+    </div>
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('login')">Sign In</button>
+      <button class="tab" onclick="switchTab('register')">Register</button>
+    </div>
+
+    <!-- Login -->
+    <div class="form-panel active" id="panel-login">
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" id="login-email" placeholder="you@example.com">
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="login-password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
+      </div>
+      <button class="btn" id="login-btn" onclick="doLogin()">Access Dashboard →</button>
+      <div id="login-msg"></div>
+    </div>
+
+    <!-- Register -->
+    <div class="form-panel" id="panel-register">
+      <div class="form-group">
+        <label>Full Name</label>
+        <input type="text" id="reg-name" placeholder="Your Name">
+      </div>
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" id="reg-email" placeholder="you@example.com">
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="reg-password" placeholder="Min. 6 characters" onkeydown="if(event.key==='Enter')doRegister()">
+      </div>
+      <button class="btn" id="reg-btn" onclick="doRegister()">Create Account →</button>
+      <div id="reg-msg"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = 'http://localhost:5000/api';
+
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', (i===0&&tab==='login')||(i===1&&tab==='register')));
+  document.querySelectorAll('.form-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById(`panel-${tab}`).classList.add('active');
+}
+
+async function doLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value;
+  const msg = document.getElementById('login-msg');
+  const btn = document.getElementById('login-btn');
+  if (!email || !password) { msg.className='error'; msg.textContent='Please fill all fields.'; return; }
+  btn.disabled = true; btn.textContent = 'Authenticating...';
+  try {
+    const res = await fetch(`${API}/auth/login`, {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({email, password})
+    });
+    const data = await res.json();
+    if (res.ok) {
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user));
+      msg.className='success'; msg.textContent='✓ Authenticated. Loading dashboard...';
+      setTimeout(() => location.href = 'dashboard.html', 800);
+    } else {
+      msg.className='error'; msg.textContent = data.error || 'Login failed.';
+      btn.disabled = false; btn.textContent = 'Access Dashboard →';
+    }
+  } catch(e) {
+    msg.className='error'; msg.textContent='Cannot reach server. Is Flask running?';
+    btn.disabled = false; btn.textContent = 'Access Dashboard →';
+  }
+}
+
+async function doRegister() {
+  const name = document.getElementById('reg-name').value.trim();
+  const email = document.getElementById('reg-email').value.trim();
+  const password = document.getElementById('reg-password').value;
+  const msg = document.getElementById('reg-msg');
+  const btn = document.getElementById('reg-btn');
+  if (!name || !email || !password) { msg.className='error'; msg.textContent='Please fill all fields.'; return; }
+  if (password.length < 6) { msg.className='error'; msg.textContent='Password must be at least 6 characters.'; return; }
+  btn.disabled = true; btn.textContent = 'Creating account...';
+  try {
+    const res = await fetch(`${API}/auth/register`, {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({name, email, password})
+    });
+    const data = await res.json();
+    if (res.ok) {
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user));
+      msg.className='success'; msg.textContent='✓ Account created! Redirecting...';
+      setTimeout(() => location.href = 'dashboard.html', 800);
+    } else {
+      msg.className='error'; msg.textContent = data.error || 'Registration failed.';
+      btn.disabled = false; btn.textContent = 'Create Account →';
+    }
+  } catch(e) {
+    msg.className='error'; msg.textContent='Cannot reach server. Is Flask running?';
+    btn.disabled = false; btn.textContent = 'Create Account →';
+  }
+}
+
+if (localStorage.getItem('token')) location.href = 'dashboard.html';
+</script>
+</body>
+</html>
